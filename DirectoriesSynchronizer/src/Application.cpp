@@ -1,7 +1,11 @@
-#include "Directory.h"
 #include <iostream>
+#include "Directory.h"
+#include "util/Logger.h"
+
 int main()
 {
+	Logger::Init();
+
 	Directory dir("D:/Testy/folder");
 	std::cout << dir.GetPath() << std::endl;
 	for (const auto& ele : dir.GetElements())

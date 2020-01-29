@@ -2,6 +2,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "util/Logger.h"
+
 struct DirElement
 {
 	const std::string path;
@@ -34,7 +36,7 @@ struct DirElement
 		}
 		catch (std::ifstream::failure e)
 		{
-			// TODO: ERROR LOGGER
+			LOG_ERROR("Could not load file: {0}", path);
 		}
 		return content;
 	}
