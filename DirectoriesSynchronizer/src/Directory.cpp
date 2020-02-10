@@ -5,6 +5,9 @@
 Directory::Directory(const std::string& directoryPath)
 	: m_Path(directoryPath)
 {
+	if (!std::filesystem::exists(directoryPath))
+		LOG_ERROR("Directory: {0} does not exist!", directoryPath);
+
 	LOG_DEBUG("Iterating through directory: {0}", directoryPath);
 	for (const auto& element : std::filesystem::directory_iterator(directoryPath))
 	{

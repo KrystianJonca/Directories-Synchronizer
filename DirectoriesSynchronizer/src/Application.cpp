@@ -9,7 +9,6 @@ int main()
 
 	Directory dir1("D:/Testy/folder");
 	Directory dir2("D:/Testy/Folderdocelowy");
-	std::cout << dir1.GetPath() << std::endl;
 
 	Sync synced;
 
