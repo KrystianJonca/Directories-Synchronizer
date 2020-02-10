@@ -12,7 +12,7 @@ public:
 	inline const std::string& GetPath() const { return m_Path; }
 	inline const std::vector<DirElement>& GetElements() const { return m_Elements; }
 private:
-	const std::string m_Path;
+	std::string m_Path;
 	std::vector<DirElement> m_Elements;
 };
 

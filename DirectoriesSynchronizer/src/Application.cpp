@@ -1,21 +1,21 @@
 #include <iostream>
-#include "Directory.h"
+#include "Sync.h"
 #include "util/Logger.h"
 
 int main()
 {
 	Logger::Init();
+	LOG_INFO("Log initialiazed");
 
-	Directory dir("D:/Testy/folder");
-	std::cout << dir.GetPath() << std::endl;
-	for (const auto& ele : dir.GetElements())
-	{
-		std::cout << ele.path << std::endl;
-		std::cout << ele.size << std::endl;
-		std::cout << ele.isFolder << std::endl;
-		std::cout << ele.GetName() << std::endl;
-		std::cout << ele.GetContent() << std::endl;
-	}
+	Directory dir1("D:/Testy/folder");
+	Directory dir2("D:/Testy/Folderdocelowy");
+	std::cout << dir1.GetPath() << std::endl;
+
+	Sync synced;
+
+	synced.CompareByNameAndContent(dir2, dir1);
+	LOG_DEBUG(synced.GetElementsToCopy().size());
+	synced.CopyElements();
 	std::cin.get();
 	return 0;
 }

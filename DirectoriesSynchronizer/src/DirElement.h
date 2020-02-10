@@ -6,9 +6,9 @@
 
 struct DirElement
 {
-	const std::string path;
-	const unsigned int size;
-	const bool isFolder;
+	std::string path;
+	unsigned int size;
+	bool isFolder;
 
 	const std::string GetName() const
 	{
@@ -25,6 +25,7 @@ struct DirElement
 
 		try
 		{
+			LOG_DEBUG("Reading: {0}", path);
 			file.open(path);
 
 			std::stringstream fileStream;
@@ -33,6 +34,7 @@ struct DirElement
 			file.close();
 
 			content = fileStream.str();
+			LOG_DEBUG("Reading completed");
 		}
 		catch (std::ifstream::failure e)
 		{

@@ -17,9 +17,11 @@ private:
 	#define LOG_INFO(...)     Logger::GetLogger()->info(__VA_ARGS__)
 	#define LOG_WARN(...)     Logger::GetLogger()->warn(__VA_ARGS__)
 	#define LOG_ERROR(...)    Logger::GetLogger()->error(__VA_ARGS__)
+	#define LOG_CRITICAL(...) Logger::GetLogger()->critical(__VA_ARGS__)
 #else
 	#define LOG_DEBUG(...)   
 	#define LOG_INFO(...)    
 	#define LOG_WARN(...)    
 	#define LOG_ERROR(...)  
+	#define LOG_CRITICAL(...)
 #endif 
