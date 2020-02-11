@@ -149,11 +149,13 @@
     <ClCompile Include="src\Directory.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Sync.cpp" />
+    <ClCompile Include="src\Synchronizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\Logger.h" />
     <ClInclude Include="src\Directory.h" />
     <ClInclude Include="src\DirElement.h" />
+    <ClInclude Include="src\vendor\pfd\portable-file-dialogs.h" />
     <ClInclude Include="src\vendor\spdlog\async.h" />
     <ClInclude Include="src\vendor\spdlog\async_logger-inl.h" />
     <ClInclude Include="src\vendor\spdlog\async_logger.h" />
@@ -231,6 +233,7 @@
     <ClInclude Include="src\vendor\spdlog\tweakme.h" />
     <ClInclude Include="src\vendor\spdlog\version.h" />
     <ClInclude Include="src\Sync.h" />
+    <ClInclude Include="src\Synchronizer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
