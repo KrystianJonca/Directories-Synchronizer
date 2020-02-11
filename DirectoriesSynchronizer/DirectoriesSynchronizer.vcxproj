@@ -148,7 +148,6 @@
     <ClCompile Include="src\util\Logger.cpp" />
     <ClCompile Include="src\Directory.cpp" />
     <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Sync.cpp" />
     <ClCompile Include="src\Synchronizer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -232,7 +231,6 @@
     <ClInclude Include="src\vendor\spdlog\spdlog.h" />
     <ClInclude Include="src\vendor\spdlog\tweakme.h" />
     <ClInclude Include="src\vendor\spdlog\version.h" />
-    <ClInclude Include="src\Sync.h" />
     <ClInclude Include="src\Synchronizer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

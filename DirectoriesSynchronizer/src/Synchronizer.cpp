@@ -8,9 +8,15 @@ void Synchronizer::SyncByName(const Directory& syncTo, const Directory& syncFrom
 
 	if (syncTo.GetElements().empty())
 	{
-		LOG_DEBUG("Comperison completed");
+		LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 
 		LOG_DEBUG("Copying {0} to {1}", syncFrom.GetPath(), syncTo.GetPath());
+		std::filesystem::copy(
+			syncFrom.GetPath(),
+			syncTo.GetPath(),
+			std::filesystem::copy_options::recursive
+		);
+		LOG_DEBUG("Copying folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 		return;
 	}
 
@@ -44,7 +50,7 @@ void Synchronizer::SyncByName(const Directory& syncTo, const Directory& syncFrom
 		if (addFile)
 			Get().Copy(element, syncTo.GetPath());
 	}
-	LOG_DEBUG("Comperison completed");
+	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 }
 void Synchronizer::SyncByNameAndSize(const Directory& syncTo, const Directory& syncFrom)
 {
@@ -52,9 +58,15 @@ void Synchronizer::SyncByNameAndSize(const Directory& syncTo, const Directory& s
 
 	if (syncTo.GetElements().empty())
 	{
-		LOG_DEBUG("Comperison completed");
+		LOG_DEBUG("Comperison of folders {} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 
 		LOG_DEBUG("Copying {0} to {1}", syncFrom.GetPath(), syncTo.GetPath());
+		std::filesystem::copy(
+			syncFrom.GetPath(),
+			syncTo.GetPath(),
+			std::filesystem::copy_options::recursive
+		);
+		LOG_DEBUG("Copying folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 		return;
 	}
 
@@ -96,7 +108,7 @@ void Synchronizer::SyncByNameAndSize(const Directory& syncTo, const Directory& s
 		if (addFile)
 			Get().Copy(element, syncTo.GetPath());
 	}
-	LOG_DEBUG("Comperison completed");
+	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 }
 void Synchronizer::SyncByNameAndContent(const Directory& syncTo, const Directory& syncFrom)
 {
@@ -104,9 +116,15 @@ void Synchronizer::SyncByNameAndContent(const Directory& syncTo, const Directory
 
 	if (syncTo.GetElements().empty())
 	{
-		LOG_DEBUG("Comperison completed");
+		LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 
 		LOG_DEBUG("Copying {0} to {1}", syncFrom.GetPath(), syncTo.GetPath());
+		std::filesystem::copy(
+			syncFrom.GetPath(),
+			syncTo.GetPath(),
+			std::filesystem::copy_options::recursive
+		);
+		LOG_DEBUG("Copying folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 		return;
 	}
 
@@ -156,22 +174,22 @@ void Synchronizer::SyncByNameAndContent(const Directory& syncTo, const Directory
 		if (addFile)
 			Get().Copy(element, syncTo.GetPath());
 	}
-	LOG_DEBUG("Comperison completed");
+	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 }
 
 void Synchronizer::Copy(const DirElement& elementToCopy, const std::string path) const
 {
-	LOG_DEBUG("Copying {0} to {1}...", path, path);
+	LOG_DEBUG("Copying {0} to {1}", path, path);
 
 	if (elementToCopy.isFolder)
-		std::filesystem::create_directory(path + "/" + elementToCopy.GetName());
+		std::filesystem::create_directory(path + "\\" + elementToCopy.GetName());
 
 	std::filesystem::copy(
 		elementToCopy.path,
-		elementToCopy.isFolder ? path + "/" + elementToCopy.GetName() : path,
+		elementToCopy.isFolder ? path + "\\" + elementToCopy.GetName() : path,
 		std::filesystem::copy_options::recursive
 	);
 
-	LOG_DEBUG("Finished.");
+	LOG_DEBUG("Copying finished.");
 	
 }

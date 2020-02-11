@@ -12,7 +12,7 @@ struct DirElement
 
 	const std::string GetName() const
 	{
-		return path.substr(path.find_last_of("/") + 1);
+		return path.substr(path.find_last_of("\\") + 1);
 	}
 	const std::string GetContent() const
 	{
