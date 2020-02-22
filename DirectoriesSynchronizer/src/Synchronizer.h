@@ -6,8 +6,6 @@
 class Synchronizer
 {
 public:
-	Synchronizer(const Synchronizer&) = delete;
-
 	static Synchronizer& Get() { 
 		static Synchronizer instance;
 		return instance;
@@ -16,6 +14,10 @@ public:
 	void SyncByName(const Directory& syncTo, const Directory& syncFrom);
 	void SyncByNameAndSize(const Directory& syncTo, const Directory& syncFrom);
 	void SyncByNameAndContent(const Directory& syncTo, const Directory& syncFrom);
+
+	
+
+	bool AreContentsEqual(const DirElement& elementPath, const DirElement& refElementPath);
 private:
 	Synchronizer() = default;
 

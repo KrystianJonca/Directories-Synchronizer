@@ -45,14 +45,14 @@ int main()
 
 		std::string confirmation;
 		bool sync = false;
-		int method;
+		int method = 0;
 		
 		for (;;)
 		{
 			std::cout << "Wybierz metode synchronizacji: (1/2/3)" << std::endl;
-			std::cout << "1. Synchronizacja po nazwie plików" << std::endl;
-			std::cout << "2. Synchronizacja po nazwie i rozmiarze plików" << std::endl;
-			std::cout << "3. Synchronizacja po nazwie i zawartosci plików (najwolniejsza)" << std::endl;
+			std::cout << "1. Synchronizacja po nazwie plikow" << std::endl;
+			std::cout << "2. Synchronizacja po nazwie i rozmiarze plikow" << std::endl;
+			std::cout << "3. Synchronizacja po nazwie i zawartosci plikow (najwolniejsza)" << std::endl;
 
 			std::cin >> method;
 
@@ -96,7 +96,7 @@ int main()
 			default:
 				break;
 			}
-			std::cout << "Synchronizacja zakoñczona" << std::endl;
+			std::cout << "Synchronizacja zakonczona" << std::endl;
 		}
 
 		std::cout << "Zaczac jeszcze raz?" << std::endl;

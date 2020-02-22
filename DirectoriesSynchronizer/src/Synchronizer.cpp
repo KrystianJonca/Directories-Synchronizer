@@ -2,6 +2,8 @@
 
 #include <filesystem>
 
+const unsigned int BUFFER_SIZE = 1048576;
+
 void Synchronizer::SyncByName(const Directory& syncTo, const Directory& syncFrom)
 {
 	LOG_DEBUG("Comparing by name {0} and {1}", syncFrom.GetPath(), syncTo.GetPath());
@@ -24,14 +26,14 @@ void Synchronizer::SyncByName(const Directory& syncTo, const Directory& syncFrom
 
 	for (const DirElement& element : syncFrom.GetElements())
 	{
-		for (const DirElement& desElement : syncTo.GetElements())
+		for (const DirElement& refElement : syncTo.GetElements())
 		{
-			if (element.GetName() == desElement.GetName())
+			if (element.GetName() == refElement.GetName())
 			{
-				if (element.isFolder && desElement.isFolder)
+				if (element.isFolder && refElement.isFolder)
 				{
 					Directory copySubFolder(element.path);
-					Directory desSubFolder(desElement.path);
+					Directory desSubFolder(refElement.path);
 
 					Synchronizer::Get().SyncByName(desSubFolder, copySubFolder);
 				
@@ -48,7 +50,7 @@ void Synchronizer::SyncByName(const Directory& syncTo, const Directory& syncFrom
 			}
 		}
 		if (addFile)
-			Get().Copy(element, syncTo.GetPath());
+			Synchronizer::Get().Copy(element, syncTo.GetPath());
 	}
 	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 }
@@ -74,21 +76,21 @@ void Synchronizer::SyncByNameAndSize(const Directory& syncTo, const Directory& s
 
 	for (const DirElement& element : syncFrom.GetElements())
 	{
-		for (const DirElement& desElement : syncTo.GetElements())
+		for (const DirElement& refElement : syncTo.GetElements())
 		{
-			if (element.GetName() == desElement.GetName())
+			if (element.GetName() == refElement.GetName())
 			{
-				if (element.isFolder && desElement.isFolder)
+				if (element.isFolder && refElement.isFolder)
 				{
 					Directory copySubFolder(element.path);
-					Directory desSubFolder(desElement.path);
+					Directory desSubFolder(refElement.path);
 
 					Synchronizer::Get().SyncByName(desSubFolder, copySubFolder);
 
 					addFile = false;
 					break;
 				}
-				if (element.size == desElement.size)
+				if (element.size == refElement.size)
 				{
 					addFile = false;
 					break;
@@ -106,7 +108,7 @@ void Synchronizer::SyncByNameAndSize(const Directory& syncTo, const Directory& s
 			}
 		}
 		if (addFile)
-			Get().Copy(element, syncTo.GetPath());
+			Synchronizer::Get().Copy(element, syncTo.GetPath());
 	}
 	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 }
@@ -132,23 +134,23 @@ void Synchronizer::SyncByNameAndContent(const Directory& syncTo, const Directory
 
 	for (const DirElement& element : syncFrom.GetElements())
 	{
-		for (const DirElement& desElement : syncTo.GetElements())
+		for (const DirElement& refElement : syncTo.GetElements())
 		{
-			if (element.GetName() == desElement.GetName())
+			if (element.GetName() == refElement.GetName())
 			{
-				if (element.isFolder && desElement.isFolder)
+				if (element.isFolder && refElement.isFolder)
 				{
 					Directory copySubFolder(element.path);
-					Directory desSubFolder(desElement.path);
+					Directory desSubFolder(refElement.path);
 
 					Synchronizer::Get().SyncByName(desSubFolder, copySubFolder);
 
 					addFile = false;
 					break;
 				}
-				if (element.size == desElement.size)
+				if (element.size == refElement.size)
 				{
-					if (element.GetContent() == desElement.GetContent())
+					if (Synchronizer::Get().AreContentsEqual(element, refElement))
 					{
 						addFile = false;
 						break;
@@ -172,9 +174,53 @@ void Synchronizer::SyncByNameAndContent(const Directory& syncTo, const Directory
 			}
 		}
 		if (addFile)
-			Get().Copy(element, syncTo.GetPath());
+			Synchronizer::Get().Copy(element, syncTo.GetPath());
 	}
 	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
+}
+
+bool Synchronizer::AreContentsEqual(const DirElement& elementPath, const DirElement& refElementPath)
+{
+	if (elementPath.isFolder && refElementPath.isFolder)
+		return true;
+	else if (elementPath.isFolder || refElementPath.isFolder)
+		return false;
+
+	LOG_DEBUG("Comapring contents of {0} and {1}", elementPath.path, refElementPath.path);
+
+	std::ifstream file(elementPath.path.c_str(), std::ifstream::in | std::ifstream::binary);
+	std::ifstream refFile(refElementPath.path.c_str(), std::ifstream::in | std::ifstream::binary);
+
+	if (!file.is_open() || !refFile.is_open())
+	{
+		LOG_ERROR("Reading files failed!");
+		return true;
+	}
+
+	char* elementBuffer = new char[BUFFER_SIZE];
+	char* refElementBuffer = new char[BUFFER_SIZE];
+
+	do
+	{
+		file.read(elementBuffer, BUFFER_SIZE);
+		refFile.read(refElementBuffer, BUFFER_SIZE);
+
+		if (std::memcmp(elementBuffer, refElementBuffer, file.gcount()) != 0)
+		{
+			delete[] elementBuffer;
+			delete[] refElementBuffer;
+
+			LOG_DEBUG("Comparison completed. Contents are not the same.");
+
+			return false;
+		}
+	} while (file.good() || refFile.good());
+	
+	LOG_DEBUG("Comparison completed. Contents are the same.");
+
+	delete[] elementBuffer;
+	delete[] refElementBuffer;
+	return true;
 }
 
 void Synchronizer::Copy(const DirElement& elementToCopy, const std::string path) const
@@ -187,7 +233,7 @@ void Synchronizer::Copy(const DirElement& elementToCopy, const std::string path)
 	std::filesystem::copy(
 		elementToCopy.path,
 		elementToCopy.isFolder ? path + "\\" + elementToCopy.GetName() : path,
-		std::filesystem::copy_options::recursive
+		std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing
 	);
 
 	LOG_DEBUG("Copying finished.");
