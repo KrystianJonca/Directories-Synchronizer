@@ -50,7 +50,7 @@ void Synchronizer::SyncByName(const Directory& syncTo, const Directory& syncFrom
 			}
 		}
 		if (addFile)
-			Synchronizer::Get().Copy(element, syncTo.GetPath());
+			Get().Copy(element, syncTo.GetPath());
 	}
 	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 }
@@ -108,7 +108,7 @@ void Synchronizer::SyncByNameAndSize(const Directory& syncTo, const Directory& s
 			}
 		}
 		if (addFile)
-			Synchronizer::Get().Copy(element, syncTo.GetPath());
+			Get().Copy(element, syncTo.GetPath());
 	}
 	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 }
@@ -174,7 +174,7 @@ void Synchronizer::SyncByNameAndContent(const Directory& syncTo, const Directory
 			}
 		}
 		if (addFile)
-			Synchronizer::Get().Copy(element, syncTo.GetPath());
+			Get().Copy(element, syncTo.GetPath());
 	}
 	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
 }
@@ -197,19 +197,16 @@ bool Synchronizer::AreContentsEqual(const DirElement& elementPath, const DirElem
 		return true;
 	}
 
-	char* elementBuffer = new char[BUFFER_SIZE];
-	char* refElementBuffer = new char[BUFFER_SIZE];
+	std::unique_ptr<char> elementBuffer(new char[BUFFER_SIZE]);
+	std::unique_ptr<char> refElementBuffer(new char[BUFFER_SIZE]);
 
 	do
 	{
-		file.read(elementBuffer, BUFFER_SIZE);
-		refFile.read(refElementBuffer, BUFFER_SIZE);
+		file.read(elementBuffer.get(), BUFFER_SIZE);
+		refFile.read(refElementBuffer.get(), BUFFER_SIZE);
 
-		if (std::memcmp(elementBuffer, refElementBuffer, file.gcount()) != 0)
+		if (std::memcmp(elementBuffer.get(), refElementBuffer.get(), file.gcount()) != 0)
 		{
-			delete[] elementBuffer;
-			delete[] refElementBuffer;
-
 			LOG_DEBUG("Comparison completed. Contents are not the same.");
 
 			return false;
@@ -218,8 +215,6 @@ bool Synchronizer::AreContentsEqual(const DirElement& elementPath, const DirElem
 	
 	LOG_DEBUG("Comparison completed. Contents are the same.");
 
-	delete[] elementBuffer;
-	delete[] refElementBuffer;
 	return true;
 }
 

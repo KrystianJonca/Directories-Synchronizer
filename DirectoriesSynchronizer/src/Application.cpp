@@ -52,7 +52,7 @@ int main()
 			std::cout << "Wybierz metode synchronizacji: (1/2/3)" << std::endl;
 			std::cout << "1. Synchronizacja po nazwie plikow" << std::endl;
 			std::cout << "2. Synchronizacja po nazwie i rozmiarze plikow" << std::endl;
-			std::cout << "3. Synchronizacja po nazwie i zawartosci plikow (najwolniejsza)" << std::endl;
+			std::cout << "3. Synchronizacja po nazwie i zawartosci plikow" << std::endl;
 
 			std::cin >> method;
 
@@ -66,7 +66,7 @@ int main()
 
 		for (;;)
 		{
-			std::cout << "Czy napewno chcesz zsynchronizowac wybrane foldery (t/n)?" << std::endl;
+			std::cout << "Czy napewno chcesz zsynchronizowac wybrane foldery (T/N)?" << std::endl;
 
 			std::cin >> confirmation;
 			
