@@ -158,6 +158,7 @@
     <ClCompile Include="src\Directory.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Synchronizer.cpp" />
+    <ClCompile Include="src\util\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\Logger.h" />
@@ -241,6 +242,7 @@
     <ClInclude Include="src\vendor\spdlog\tweakme.h" />
     <ClInclude Include="src\vendor\spdlog\version.h" />
     <ClInclude Include="src\Synchronizer.h" />
+    <ClInclude Include="src\util\Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

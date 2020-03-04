@@ -15,8 +15,6 @@ public:
 	void SyncByNameAndSize(const Directory& syncTo, const Directory& syncFrom);
 	void SyncByNameAndContent(const Directory& syncTo, const Directory& syncFrom);
 
-	
-
 	bool AreContentsEqual(const DirElement& elementPath, const DirElement& refElementPath);
 private:
 	Synchronizer() = default;

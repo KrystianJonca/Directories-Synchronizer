@@ -1,12 +1,17 @@
 #include "Synchronizer.h"
+#include "util/Timer.h"
 
+#include <vector>
 #include <filesystem>
+#include <future>
 
 const unsigned int BUFFER_SIZE = 1048576;
 
 void Synchronizer::SyncByName(const Directory& syncTo, const Directory& syncFrom)
 {
-	LOG_DEBUG("Comparing by name {0} and {1}", syncFrom.GetPath(), syncTo.GetPath());
+	LOG_DEBUG("Syncing by name {0} and {1}", syncFrom.GetPath(), syncTo.GetPath());
+
+	Timer timer;
 
 	if (syncTo.GetElements().empty())
 	{
@@ -52,11 +57,13 @@ void Synchronizer::SyncByName(const Directory& syncTo, const Directory& syncFrom
 		if (addFile)
 			Get().Copy(element, syncTo.GetPath());
 	}
-	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
+	LOG_DEBUG("Syncing of folders {0} and {1} completed in {2}s", syncFrom.GetPath(), syncTo.GetPath(), timer.GetDuration());
 }
 void Synchronizer::SyncByNameAndSize(const Directory& syncTo, const Directory& syncFrom)
 {
-	LOG_DEBUG("Comparing by name and size {0} and {1}", syncFrom.GetPath(), syncTo.GetPath());
+	LOG_DEBUG("Syncing by name and size {0} and {1}", syncFrom.GetPath(), syncTo.GetPath());
+
+	Timer timer;
 
 	if (syncTo.GetElements().empty())
 	{
@@ -110,11 +117,13 @@ void Synchronizer::SyncByNameAndSize(const Directory& syncTo, const Directory& s
 		if (addFile)
 			Get().Copy(element, syncTo.GetPath());
 	}
-	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
+	LOG_DEBUG("Syncing of folders {0} and {1} completed in {2}s", syncFrom.GetPath(), syncTo.GetPath(), timer.GetDuration());
 }
 void Synchronizer::SyncByNameAndContent(const Directory& syncTo, const Directory& syncFrom)
 {
-	LOG_DEBUG("Comparing by name, size and content {0} and {1}", syncFrom.GetPath(), syncTo.GetPath());
+	LOG_DEBUG("Syncing by name, size and content {0} and {1}", syncFrom.GetPath(), syncTo.GetPath());
+
+	Timer timer;
 
 	if (syncTo.GetElements().empty())
 	{
@@ -176,20 +185,22 @@ void Synchronizer::SyncByNameAndContent(const Directory& syncTo, const Directory
 		if (addFile)
 			Get().Copy(element, syncTo.GetPath());
 	}
-	LOG_DEBUG("Comperison of folders {0} and {1} completed", syncFrom.GetPath(), syncTo.GetPath());
+	LOG_DEBUG("Syncing of folders {0} and {1} completed in {2}s", syncFrom.GetPath(), syncTo.GetPath(), timer.GetDuration());
 }
 
-bool Synchronizer::AreContentsEqual(const DirElement& elementPath, const DirElement& refElementPath)
+bool Synchronizer::AreContentsEqual(const DirElement& element, const DirElement& refElement)
 {
-	if (elementPath.isFolder && refElementPath.isFolder)
+	if (element.isFolder && refElement.isFolder)
 		return true;
-	else if (elementPath.isFolder || refElementPath.isFolder)
+	else if (element.isFolder || refElement.isFolder)
 		return false;
 
-	LOG_DEBUG("Comapring contents of {0} and {1}", elementPath.path, refElementPath.path);
+	LOG_DEBUG("Comapring contents of {0} and {1}", element.path, refElement.path);
 
-	std::ifstream file(elementPath.path.c_str(), std::ifstream::in | std::ifstream::binary);
-	std::ifstream refFile(refElementPath.path.c_str(), std::ifstream::in | std::ifstream::binary);
+	Timer timer;
+
+	std::ifstream file(element.path.c_str(), std::ifstream::in | std::ifstream::binary);
+	std::ifstream refFile(refElement.path.c_str(), std::ifstream::in | std::ifstream::binary);
 
 	if (!file.is_open() || !refFile.is_open())
 	{
@@ -200,23 +211,30 @@ bool Synchronizer::AreContentsEqual(const DirElement& elementPath, const DirElem
 	std::unique_ptr<char> elementBuffer(new char[BUFFER_SIZE]);
 	std::unique_ptr<char> refElementBuffer(new char[BUFFER_SIZE]);
 
+	auto readFile = [&file, &elementBuffer]() { file.read(elementBuffer.get(), BUFFER_SIZE); };
+	auto readRefFile = [&refFile, &refElementBuffer]() { refFile.read(refElementBuffer.get(), BUFFER_SIZE); };
+
 	do
 	{
-		file.read(elementBuffer.get(), BUFFER_SIZE);
-		refFile.read(refElementBuffer.get(), BUFFER_SIZE);
+		std::async(std::launch::async, readFile);
+		std::async(std::launch::async, readRefFile);
 
-		if (std::memcmp(elementBuffer.get(), refElementBuffer.get(), file.gcount()) != 0)
+		if (file.gcount() == refFile.gcount() && std::memcmp(elementBuffer.get(), refElementBuffer.get(), (size_t)file.gcount()) != 0)
 		{
-			LOG_DEBUG("Comparison completed. Contents are not the same.");
+			LOG_DEBUG("Comparison completed in {0}. Contents are not the same.", timer.GetDuration());
 
 			return false;
 		}
 	} while (file.good() || refFile.good());
 	
-	LOG_DEBUG("Comparison completed. Contents are the same.");
+	file.close();
+	refFile.close();
+
+	LOG_DEBUG("Comparison completed in {0}s. Contents are the same.", timer.GetDuration());
 
 	return true;
 }
+
 
 void Synchronizer::Copy(const DirElement& elementToCopy, const std::string path) const
 {

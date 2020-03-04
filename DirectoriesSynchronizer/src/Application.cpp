@@ -5,12 +5,6 @@
 #include "pfd/portable-file-dialogs.h"
 #include "Synchronizer.h"
 
-enum SYNC_METHOD
-{
-	SYNC_BY_NAME = 1,
-	SYNC_BY_NAME_AND_SIZE = 2,
-	SYNC_BY_NAME_AND_CONTENT = 3,
-};
 
 int main()
 {
@@ -25,7 +19,9 @@ int main()
 	{
 		auto syncFolder = pfd::select_folder("Wybierz folder do synchronizacji").result();
 
-		if (!syncFolder.empty())
+		if (syncFolder.empty())
+			return 0;
+		else
 		{
 			LOG_INFO("Destination folder: {0}", syncFolder);
 
@@ -35,7 +31,9 @@ int main()
 
 		auto syncFromFolder = pfd::select_folder("Wybierz folder z ktorym bedziemy synchronizowac").result();
 
-		if (!syncFromFolder.empty())
+		if (syncFromFolder.empty())
+			return 0;
+		else
 		{
 			LOG_INFO("Refrence folder: {0}", syncFromFolder);
 
