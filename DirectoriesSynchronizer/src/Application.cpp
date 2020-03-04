@@ -80,6 +80,7 @@ int main()
 		
 		if (sync)
 		{
+			std::cout << "Rozpoczynam synchronizacje" << std::endl;
 			switch (method)
 			{
 			case 1:
